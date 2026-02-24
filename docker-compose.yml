@@ -5,7 +5,7 @@ services:
     image: postgres:15
     container_name: exam_postgres
     environment:
-      POSTGRES_DB: payment_db
+      POSTGRES_DB: passport_db
       POSTGRES_USER: user
       POSTGRES_PASSWORD: password
     ports:
@@ -13,11 +13,6 @@ services:
     volumes:
       - ./init-scripts/postgres:/docker-entrypoint-initdb.d
       - postgres_data:/var/lib/postgresql/data
-    healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U user -d payment_db"]
-      interval: 10s
-      timeout: 5s
-      retries: 5
 
   clickhouse:
     image: clickhouse/clickhouse-server:latest
@@ -28,10 +23,6 @@ services:
     volumes:
       - ./init-scripts/clickhouse:/docker-entrypoint-initdb.d
       - clickhouse_data:/var/lib/clickhouse
-    ulimits:
-      nofile:
-        soft: 262144
-        hard: 262144
 
   rabbitmq:
     image: rabbitmq:3-management
@@ -42,11 +33,6 @@ services:
     ports:
       - "5672:5672"
       - "15672:15672"
-    healthcheck:
-      test: ["CMD", "rabbitmq-diagnostics", "ping"]
-      interval: 10s
-      timeout: 5s
-      retries: 5
 
 volumes:
   postgres_data:
