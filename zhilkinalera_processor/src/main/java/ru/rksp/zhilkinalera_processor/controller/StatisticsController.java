@@ -13,6 +13,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import ru.rksp.zhilkinalera_processor.repository.PaymentRepository;
 
+import java.time.LocalDateTime;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -39,32 +40,33 @@ public class StatisticsController {
         Map<String, Object> response = new HashMap<>();
 
         try {
-            // Получаем количество записей в PostgreSQL
             long count = paymentRepository.count();
             log.info("Количество записей в PostgreSQL: {}", count);
+            response.put("count", count);
 
-            // Сохраняем в ClickHouse
             try {
-                String sql = "INSERT INTO агрегаты_событий_платежей (количество_записей) VALUES (?)";
-                clickhouseJdbcTemplate.update(sql, count);
-                log.info("Данные сохранены в ClickHouse");
+                // Используем латинские названия - никаких проблем с кодировкой!
+                String sql = "INSERT INTO default.payment_aggregates (records_count) VALUES (?)";
+                int updated = clickhouseJdbcTemplate.update(sql, count);
+                log.info("Данные сохранены в ClickHouse, обновлено строк: {}", updated);
                 response.put("clickhouse", "saved");
             } catch (Exception e) {
                 log.error("Ошибка при сохранении в ClickHouse: {}", e.getMessage());
                 response.put("clickhouse", "error: " + e.getMessage());
             }
 
-            response.put("count", count);
-            response.put("timestamp", java.time.LocalDateTime.now().toString());
+            response.put("timestamp", LocalDateTime.now().toString());
             response.put("status", "success");
 
             return ResponseEntity.ok(response);
 
         } catch (Exception e) {
             log.error("Ошибка: {}", e.getMessage(), e);
-            response.put("error", e.getMessage());
-            response.put("status", "error");
-            return ResponseEntity.internalServerError().body(response);
+
+            Map<String, Object> errorResponse = new HashMap<>();
+            errorResponse.put("error", e.getMessage());
+            errorResponse.put("status", "error");
+            return ResponseEntity.internalServerError().body(errorResponse);
         }
     }
 }
