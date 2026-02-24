@@ -11,7 +11,7 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-import ru.rksp.zhilkinalera_processor.repository.PaymentRepository;
+import ru.rksp.zhilkinalera_processor.repository.PassportRepository;
 
 import java.time.LocalDateTime;
 import java.util.HashMap;
@@ -19,18 +19,18 @@ import java.util.Map;
 
 @RestController
 @RequestMapping("/api/v1/events")
-@Tag(name = "Статистика платежей", description = "API для получения статистики")
+@Tag(name = "Статистика паспортов", description = "API для получения статистики по паспортам")
 public class StatisticsController {
 
     private static final Logger log = LoggerFactory.getLogger(StatisticsController.class);
 
-    private final PaymentRepository paymentRepository;
+    private final PassportRepository passportRepository;
     private final JdbcTemplate clickhouseJdbcTemplate;
 
     @Autowired
-    public StatisticsController(PaymentRepository paymentRepository,
+    public StatisticsController(PassportRepository passportRepository,
                                 @Qualifier("clickhouseJdbcTemplate") JdbcTemplate clickhouseJdbcTemplate) {
-        this.paymentRepository = paymentRepository;
+        this.passportRepository = passportRepository;
         this.clickhouseJdbcTemplate = clickhouseJdbcTemplate;
     }
 
@@ -40,13 +40,12 @@ public class StatisticsController {
         Map<String, Object> response = new HashMap<>();
 
         try {
-            long count = paymentRepository.count();
+            long count = passportRepository.count();
             log.info("Количество записей в PostgreSQL: {}", count);
             response.put("count", count);
 
             try {
-                // Используем латинские названия - никаких проблем с кодировкой!
-                String sql = "INSERT INTO default.payment_aggregates (records_count) VALUES (?)";
+                String sql = "INSERT INTO агрегаты_событий_паспортов (количество_записей) VALUES (?)";
                 int updated = clickhouseJdbcTemplate.update(sql, count);
                 log.info("Данные сохранены в ClickHouse, обновлено строк: {}", updated);
                 response.put("clickhouse", "saved");
