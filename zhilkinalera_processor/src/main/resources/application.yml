@@ -1,0 +1,46 @@
+spring:
+  application:
+    name: zhilkinalera_processor
+
+  # RabbitMQ
+  rabbitmq:
+    host: localhost
+    port: 5672
+    username: guest
+    password: guest
+
+  # PostgreSQL
+  datasource:
+    jdbc-url: jdbc:postgresql://localhost:5432/payment_db
+    username: user
+    password: password
+    driver-class-name: org.postgresql.Driver
+    hikari:
+      maximum-pool-size: 10
+      minimum-idle: 5
+      connection-timeout: 30000
+
+  # JPA
+  jpa:
+    hibernate:
+      ddl-auto: validate
+    show-sql: true
+    properties:
+      hibernate:
+        format_sql: true
+        dialect: org.hibernate.dialect.PostgreSQLDialect
+
+# ClickHouse - отдельная секция (НЕ В SPRING!)
+clickhouse:
+  url: jdbc:clickhouse://localhost:8123/default
+  username: default
+  password: ""
+
+server:
+  port: 8081
+
+springdoc:
+  api-docs:
+    path: /api-docs
+  swagger-ui:
+    path: /swagger-ui.html
