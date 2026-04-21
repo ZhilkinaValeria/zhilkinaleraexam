@@ -3,6 +3,8 @@
 **Автор:** Жилкина Валерия Дмитриевна  
 **Стек:** Java 17, Spring Boot 3.4, Maven, PostgreSQL 15, ClickHouse 23.8, RabbitMQ 3.x, Docker Compose
 
+Ответ на вопросы в [answerQuestions.md](https://github.com/ZhilkinaValeria/zhilkinaleraexam/blob/main/answerQuestions.md)
+
 ---
 
 ## Требования к окружению
