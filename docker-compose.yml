@@ -1,0 +1,48 @@
+version: '3.8'
+
+services:
+  postgres:
+    image: postgres:15
+    container_name: exam_postgres
+    environment:
+      POSTGRES_DB: passport_db
+      POSTGRES_USER: user
+      POSTGRES_PASSWORD: password
+    ports:
+      - "5432:5432"
+    volumes:
+      - ./init-scripts/postgres:/docker-entrypoint-initdb.d
+      - postgres_data:/var/lib/postgresql/data
+
+  clickhouse:
+    image: clickhouse/clickhouse-server:23.8
+    container_name: exam_clickhouse
+    environment:
+      CLICKHOUSE_USER: default
+      CLICKHOUSE_PASSWORD: ""
+      CLICKHOUSE_DB: default
+    command: >
+      bash -c "
+        rm -f /etc/clickhouse-server/users.d/default-password.xml &&
+        /entrypoint.sh
+      "
+    ports:
+      - "8123:8123"
+      - "9000:9000"
+    volumes:
+      - ./init-scripts/clickhouse:/docker-entrypoint-initdb.d
+      - clickhouse_data:/var/lib/clickhouse
+
+  rabbitmq:
+    image: rabbitmq:3-management
+    container_name: exam_rabbitmq
+    environment:
+      RABBITMQ_DEFAULT_USER: guest
+      RABBITMQ_DEFAULT_PASS: guest
+    ports:
+      - "5672:5672"
+      - "15672:15672"
+
+volumes:
+  postgres_data:
+  clickhouse_data:

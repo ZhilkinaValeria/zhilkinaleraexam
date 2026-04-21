@@ -1,0 +1,26 @@
+spring:
+  application:
+    name: zhilkinalera_ingest
+
+  rabbitmq:
+    host: localhost
+    port: 5672
+    username: guest
+    password: guest
+    connection-timeout: 5s
+
+server:
+  port: 8082
+
+springdoc:
+  api-docs:
+    path: /api-docs
+  swagger-ui:
+    path: /swagger-ui.html
+    operations-sorter: method
+
+logging:
+  level:
+    ru.rksp.zhilkinalera_ingest: DEBUG
+    org.springframework.web: INFO
+    org.springframework.amqp.rabbit: DEBUG
